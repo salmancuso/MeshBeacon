@@ -1,0 +1,39 @@
+# meshcore.keys  –  MeshCore connection & channel credentials
+# Copy this file to meshcore.keys and fill in your values.
+# *** Do NOT commit meshcore.keys to version control ***
+#
+# Lines starting with # are comments. Blank lines are ignored.
+# Format:  KEY = value
+
+# ── Connection Mode ──────────────────────────────────────────────────────────
+# "ble" for Bluetooth LE, "serial" for USB serial
+MODE = ble
+
+# ── BLE Configuration ────────────────────────────────────────────────────────
+# Your device's Bluetooth address (see README for how to find it)
+BLE_ADDR = A1B2C3D4-E5F6-7890-ABCD-EF1234567890
+# Optional BLE pairing PIN (leave blank if not required)
+BLE_PIN =
+
+# ── Serial Configuration ─────────────────────────────────────────────────────
+# USB serial port (used when MODE = serial)
+# macOS example:   /dev/tty.usbmodem1234561
+# Linux example:   /dev/ttyACM0  or  /dev/meshcore (via udev)
+# Windows example: COM3
+SERIAL_PORT = /dev/tty.usbmodem1234561
+BAUD_RATE = 115200
+
+# ── Channel Definitions ──────────────────────────────────────────────────────
+# One per line:  CHANNEL = key | Display Name | channel_secret_hex
+#
+# "key" is the short name you use on the command line (e.g. --channel myhams)
+# "Display Name" is what appears on the device
+# "channel_secret_hex" is the 32-char hex string from --list-channels
+#
+# To find your channel secrets:
+#   python meshcore_send.py --list-channels
+#
+CHANNEL = myhams       | MyHams           | a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4
+CHANNEL = localnet     | Local Net        | 1234567890abcdef1234567890abcdef
+CHANNEL = wxchannel    | weather          | abcdef1234567890abcdef1234567890
+CHANNEL = testing      | test-channel     | 00112233445566778899aabbccddeeff

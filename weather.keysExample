@@ -1,0 +1,25 @@
+# weather.keys  –  MeshCore Weather Broadcast credentials & config
+# Copy this file to weather.keys and fill in your values.
+# *** Do NOT commit weather.keys to version control ***
+#
+# Lines starting with # are comments. Blank lines are ignored.
+# Format:  KEY = value
+
+# ── Weather Underground API Key ──────────────────────────────────────────────
+# Free for PWS owners: https://www.wunderground.com/member/api-keys
+# (1500 calls/day, 30/min)
+WU_API_KEY = your_api_key_here
+
+# ── PWS Stations ─────────────────────────────────────────────────────────────
+# One per line:  STATION = StationID | Label
+# Label is the friendly name shown in the mesh message.
+# Find stations near you: https://www.wunderground.com/wundermap
+STATION = KCASTATION1 | My Backyard
+STATION = KCASTATION2 | Downtown
+
+# ── Cities (forecast only, no PWS needed) ────────────────────────────────────
+# One per line:  CITY = Name | Latitude | Longitude
+# Uses Weather Underground forecast API by geocode.
+CITY = San Jose      | 37.3239 | -121.8921
+CITY = Santa Cruz    | 36.9741 | -122.0308
+CITY = Palo Alto     | 37.4419 | -122.1430

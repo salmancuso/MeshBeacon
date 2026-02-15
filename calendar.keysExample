@@ -1,0 +1,21 @@
+# calendar.keys  –  MeshCore Calendar Broadcast credentials
+# Copy this file to calendar.keys and fill in your values.
+# *** Do NOT commit calendar.keys to version control ***
+#
+# Lines starting with # are comments. Blank lines are ignored.
+# Format:  KEY = value
+
+# ── Google Sheets Published CSV URL ──────────────────────────────────────────
+# To get this URL:
+#   1. Open your Google Sheet with event data
+#   2. File → Share → Publish to web
+#   3. Select the sheet/tab, choose "Comma-separated values (.csv)"
+#   4. Click "Publish" and copy the URL
+#
+# Required columns in the spreadsheet:
+#   EventDatetime  - Format: YYYY-MM-DD HHMM  (e.g., 2026-02-15 1900)
+#   EventName      - Event title              (e.g., "WVARA Net")
+#   Description    - Short description         (e.g., "Weekly 2m net on 146.76 MHz")
+#   Channels       - Comma-separated targets   (e.g., "myhams,localnet")
+#
+EVENTS_CSV_URL = https://docs.google.com/spreadsheets/d/e/YOUR_SPREADSHEET_ID_HERE/pub?gid=0&single=true&output=csv
