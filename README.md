@@ -804,6 +804,11 @@ Bug reports and feature suggestions are welcome via GitHub issues.
 
 ---
 
+## Author
+Sal Mancuso W6SAL
+
+---
+
 ## License
 
 Released as open source for the amateur radio community. Use, modify, and distribute freely. No warranty provided.
