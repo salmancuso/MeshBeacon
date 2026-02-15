@@ -111,7 +111,7 @@ All secrets, API keys, and connection details are kept in `.keys` files that are
     │  • Weather Underground (weather)              │
     │  • Open-Meteo (tropo data)                    │
     │  • USGS Earthquake Hazards                    │
-    │  • HamQSL/N0NBH (solar/HF bands)             │
+    │  • HamQSL/N0NBH (solar/HF bands)              │
     │  • Google Sheets (calendar CSV)               │
     │  • POTA API (park activator spots)            │
     │  • SOTA API (summit activator spots)          │
@@ -120,7 +120,7 @@ All secrets, API keys, and connection details are kept in `.keys` files that are
                    ▼
     ┌──────────────────────────────────────┐
     │      MeshCore Device (LoRa)          │
-    │  • T-Deck, Heltec, RAK, etc.        │
+    │  • T-Deck, Heltec, RAK, etc.         │
     │  • BLE or USB Serial connection      │
     └──────────────────────────────────────┘
                    │
