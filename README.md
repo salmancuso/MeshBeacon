@@ -150,10 +150,65 @@ pip install -r requirements.txt
 # Add user to dialout group for serial access
 sudo usermod -a -G dialout $USER
 # Log out and back in for group changes to take effect
+```
 
-# Find serial device
-ls /dev/meshcore      # udev symlink
-ls /dev/ttyACM* /dev/ttyUSB*   # fallback
+**Creating a Persistent Device Symlink (Strongly Recommended)**
+
+By default, Linux assigns USB serial devices dynamically (`/dev/ttyACM0`, `/dev/ttyACM1`, etc.) based on enumeration order, which can change between reboots or when other USB devices are connected. Creating a udev rule gives your MeshCore node a fixed, permanent name like `/dev/meshcore0`.
+
+**Step 1: Find your device's unique USB attributes**
+
+Plug in your MeshCore node and run:
+```bash
+udevadm info -a -n /dev/ttyACM0 | grep -E 'ATTRS{idVendor}|ATTRS{idProduct}|ATTRS{serial}'
+```
+
+Look for the first matching block (your device, not the USB hub). Example output for an ESP32-based MeshCore node:
+```
+ATTRS{idProduct}=="0002"
+ATTRS{idVendor}=="303a"
+ATTRS{serial}=="90706983BBCC"
+```
+
+The `serial` value is unique per device — this is what locks the rule to your specific node.
+
+**Step 2: Create the udev rules file**
+```bash
+sudo nano /etc/udev/rules.d/99-meshcore.rules
+```
+
+Add the following (substituting your actual serial number):
+```
+SUBSYSTEM=="tty", ATTRS{idVendor}=="303a", ATTRS{idProduct}=="0002", ATTRS{serial}=="90706983BBCC", SYMLINK+="meshcore0", RUN+="/bin/stty -F /dev/%k -hupcl"
+```
+
+The `RUN+="/bin/stty -F /dev/%k -hupcl"` portion disables hangup-on-close, which prevents the ESP32 from resetting every time the serial connection drops — important for unattended cron operation.
+
+**Step 3: Reload udev and apply**
+```bash
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+```
+
+**Step 4: Verify**
+```bash
+ls -la /dev/meshcore*
+# Expected output:
+# lrwxrwxrwx 1 root root 7 Feb 26 08:43 /dev/meshcore0 -> ttyACM0
+```
+
+If you have multiple MeshCore nodes, add one rule per device with their respective serial numbers, naming them `meshcore0`, `meshcore1`, etc.
+
+**Step 5: Configure the environment variable**
+```bash
+export MESHCORE_PORT="/dev/meshcore0"
+# Add to ~/.bashrc to make permanent
+```
+
+```bash
+# Verify serial device
+ls /dev/meshcore0     # persistent udev symlink (recommended)
+ls /dev/ttyACM* /dev/ttyUSB*   # fallback if udev rule not configured
 ```
 
 ---
@@ -376,15 +431,32 @@ Log rotation with `logrotate`:
 
 ⚠️ Running on Raspberry Pi requires addressing three issues:
 
-**Issue 1: Hardware Flow Control** — Linux enables `crtscts` by default, causing hangs.
+### Raspberry Pi Considerations
+
+⚠️ Running on Raspberry Pi requires addressing three issues:
+
+**Issue 1: Persistent Device Naming & Hardware Flow Control** — Linux assigns USB serial ports dynamically, and also enables `crtscts` (hardware flow control) by default which can cause hangs with ESP32-based devices. The udev rule below solves both problems at once.
+
+First, identify your device's USB serial number (see the [Linux Installation](#linux-raspberry-pi-ubuntu-etc) section above for full steps):
 ```bash
-# Fix via udev rule (persistent):
+udevadm info -a -n /dev/ttyACM0 | grep -E 'ATTRS{idVendor}|ATTRS{idProduct}|ATTRS{serial}'
+```
+
+Then create the persistent udev rule:
+```bash
 sudo tee /etc/udev/rules.d/99-meshcore.rules <<EOF
-SUBSYSTEM=="tty", ATTRS{idVendor}=="303a", ATTRS{idProduct}=="1001", \
-    SYMLINK+="meshcore", MODE="0666", RUN+="/bin/stty -F /dev/%k -crtscts"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="303a", ATTRS{idProduct}=="0002", ATTRS{serial}=="90706983BBCC", SYMLINK+="meshcore0", RUN+="/bin/stty -F /dev/%k -hupcl -crtscts"
 EOF
 sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
+
+Verify it worked:
+```bash
+ls -la /dev/meshcore*
+# lrwxrwxrwx 1 root root 7 Feb 26 08:43 /dev/meshcore0 -> ttyACM0
+```
+
+> **Note**: Replace `ATTRS{serial}=="90706983BBCC"` with your device's actual serial number. Using the serial number (rather than just vendor/product IDs) ensures the rule binds to your specific node even if you connect multiple ESP32 devices. Set `MESHCORE_PORT=/dev/meshcore0` in your environment.
 
 **Issue 2: Device File Race** — Scripts at boot start before udev creates `/dev/meshcore`.
 ```bash
